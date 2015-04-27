@@ -33,11 +33,11 @@ public class Deck
    public void freshDeck()
    {
       deck = new ArrayList<Card>();
-      System.out.println(deck.size());
+      // System.out.println(deck.size());
 
       for (int r = Card.ACE; r<=Card.KING;r++)
       {
-         for (int s=Card.SPADES;s<=Card.CLUBS;s++)
+         for (int s=Card.SPADES;s<=Card.DIAMONDS;s++)
          {
            deck.add(new Card(r,s));
          }
@@ -91,27 +91,8 @@ public class Deck
       return (deck.size() == 0);
    }
 
-   public static void main(String [] args) 
-   {
-      Deck deck = new Deck();
-      deck.shuffle();
-      int i = 0;
-      while (!(deck.isEmpty()))
-         System.out.println(i++ + " : " + deck.dealCard().toString());
-      System.out.println(deck.cardsRemaining());
-      deck.freshDeck();
-      while (!(deck.isEmpty()))
-         System.out.println(i++ + " : " + deck.dealCard().toString());
-         
-      Card c1 = new Card(Card.ACE,Card.HEARTS);
-      Card c2 = new Card(Card.JACK,Card.SPADES);
-      Card c3 = new Card(4,Card.HEARTS);
-      
-      System.out.println(highCard(c1,c2,c3));
-      
 
-   }
-   public static Card highCard(Card...cards)
+    public static Card highCard(Card...cards)
    {
    
       Card high = cards[0];

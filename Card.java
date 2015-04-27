@@ -73,12 +73,13 @@ public class Card
             break;
          case HEARTS:
             suitName = "hearts";
+            break;
          case DIAMONDS:
             suitName = "diamonds";
             break;
        }
             
-      return ("Suit: " + suitName);
+      return (suitName);
     }
     
     /*

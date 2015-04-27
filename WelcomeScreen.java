@@ -39,6 +39,7 @@ public class WelcomeScreen extends  JFrame
          
          // set welcome message
          welcomeMessage = new JLabel("Welcome to War!");
+         welcomeMessage.setFont(new Font("SansSerif", Font.BOLD, 26));
          
          // create panel for welcome message
       //   imgPanel = new JPanel();
@@ -48,6 +49,8 @@ public class WelcomeScreen extends  JFrame
          
          // create play button
          play = new JButton("Play Game");
+         
+         play.setFont(new Font("SansSerif", Font.BOLD, 30));
          
           // Register event listeners with play button
           play.addActionListener(new PlayButtonListener());
@@ -60,6 +63,7 @@ public class WelcomeScreen extends  JFrame
          
          // create rules button
          rules = new JButton("Rules");
+         rules.setFont(new Font("SansSerif", Font.BOLD, 30));
          
           // Register event listeners with play button
           play.addActionListener(new RulesButtonListener());
