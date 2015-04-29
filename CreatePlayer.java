@@ -18,9 +18,10 @@ public class CreatePlayer extends JFrame
       private JTextField nameField;
       private JPanel label;
       private JPanel name;
-      private JPanel button;
-      private JButton beginButton;
-      final int WINDOW_WIDTH = 605;
+      private JPanel Button;
+      private JPanel quitPanel;
+      private JButton beginButton, quitButton;
+      final int WINDOW_WIDTH = 305;
       final int WINDOW_HEIGHT = 115;
 
       /**
@@ -37,7 +38,7 @@ public class CreatePlayer extends JFrame
          setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          
          // Create a BorderLayout manager
-         setLayout(new GridLayout(1,1));
+         setLayout(new GridLayout(3,1));
          
          // set text for entering name
          enterPlayer = new JLabel("Enter player name:");
@@ -65,10 +66,21 @@ public class CreatePlayer extends JFrame
          
        // add begin button to name panel
        name.add(beginButton);
-         
+       
+       // create panel for quit button
+        quitPanel = new JPanel();
+        // create quit button
+        quitButton = new JButton("Quit");
+        
+        // register event with quitButton
+        quitButton.addActionListener(new QuitGame());
+        
+        quitPanel.add(quitButton);
+        
          // add panels to content pane
          add(label);
          add(name);
+         add(quitPanel);
          
          // display the window
          setVisible(true);
@@ -86,5 +98,17 @@ public class CreatePlayer extends JFrame
             setVisible(false);
          }
       }
+      
+      /**
+         quit button event handler
+      */
+      private class QuitGame implements ActionListener
+      {
+         public void actionPerformed(ActionEvent e)
+         {
+            System.exit(0);
+         }
+      }
+
 
 }

@@ -17,15 +17,19 @@ import java.awt.event.*;
 public class PlayScreen extends JFrame
 {
       private String playerName;
-      private JPanel compStatsPanel, centerPanel, playerPanel, computerPanel;
-      private JPanel playerStatsPanel, sidePanel1, sidePanel2;
-      private JLabel compStatsTxt, playerStatsTxt, cCardFront, pCardFront, compPickCard, winnerMsg;
-      private JButton pickCard;
-      final int WINDOW_WIDTH = 600;
-      final int WINDOW_HEIGHT = 515;
+      private JPanel compStatsPanel, centerPanel, midCenterPanel, playerPanel;
+      private JPanel computerPanel, quitPanel, newGamePanel, playerStatsPanel, sidePanel1, sidePanel2;
+      private JLabel compStatsTxt, playerStatsTxt, cCardFront, cCardFront2, pCardFront;
+      private JLabel pCardFront2, compPickCard, compPickCard2, pickCard2, winnerMsg;
+      private ImageIcon smallBack, cardBack, smallFront, cardFaceImg;
+      private JButton pickCard, quit, newGame;
+      final int WINDOW_WIDTH = 800;
+      final int WINDOW_HEIGHT = 615;
       private int compNum = 26;
       private int playNum = 26;
       private QueueReferenceBased compPile, playerPile;
+      private ArrayList<Card> wonCards = new ArrayList<>();
+      private Card playerCard = new Card(0,0), compCard = new Card(0,0);
 
    /**
       constructor accepts player's name, sets
@@ -56,12 +60,8 @@ public class PlayScreen extends JFrame
          
          // create side panels
           sidePanel1 = new JPanel();
-          sidePanel2 = new JPanel();
-         
-         // add blank winner message to sidePanel2
-         winnerMsg = new JLabel("");
-         sidePanel2.add(winnerMsg);
-         
+          sidePanel2 = new JPanel(new GridLayout(3,1));
+                  
          // create label for computer
          compStatsTxt = new JLabel("Computer's Remaining Cards: " + compNum);
          compStatsPanel.add(compStatsTxt);
@@ -81,28 +81,65 @@ public class PlayScreen extends JFrame
          dealCards();
        
            // create button for top of players card queue
-           ImageIcon cardBack = new ImageIcon("cardpics//back.jpg");
+           cardBack = new ImageIcon("cardpics//back.jpg");
            pickCard = new JButton(cardBack);
            
            // register event with pickCard button
-           pickCard.addActionListener(new nextRound());
+           pickCard.addActionListener(new NextRound());
+           
+           // create quit button
+           quit = new JButton("Quit");
+           
+           // register event with quit button
+           quit.addActionListener(new QuitGame());
+           
+           // create panel for quit button
+           quitPanel = new JPanel();
+           
+           // add quit button to panel
+           quitPanel.add(quit);
+           
+           // create new game button
+           newGame = new JButton("New Game");
+           
+           // register event with new game button
+           newGame.addActionListener(new CreateGame());
+           
+           // create panel for new game button
+           newGamePanel = new JPanel();
+           
+           // add new game button to panel
+           newGamePanel.add(newGame);
+           
+           // add new game panel to sidepanel2
+           sidePanel2.add(newGamePanel);
+           
+           // add quit panel  to sidepanel2
+           sidePanel2.add(quitPanel);
            
            //make card back image smaller for computer
            Image img = cardBack.getImage();
            Image img2 = img.getScaledInstance(125, 160,  java.awt.Image.SCALE_SMOOTH);
-           ImageIcon smallBack = new ImageIcon(img2);
+           smallBack = new ImageIcon(img2);
          
             // add card back img for computer
             compPickCard = new JLabel(smallBack); 
            
-           // create center panel to hold comp and player cards
-           centerPanel = new JPanel(new GridLayout(2,1));
+           // create center panel to hold comp and player cards and middle text
+           centerPanel = new JPanel(new GridLayout(3,1));
            
            // create top center panel for comp cards
-           computerPanel = new JPanel(new GridLayout(1,3));
+           computerPanel = new JPanel(new FlowLayout());
+           
+           // create middle center panel for text
+           midCenterPanel = new JPanel(new FlowLayout());
+           
+           // add blank winner message to midCenter panel
+          winnerMsg = new JLabel("");
+          midCenterPanel.add(winnerMsg);
            
            // create bottom center panel for player cards
-           playerPanel = new JPanel(new GridLayout(1,3));
+           playerPanel = new JPanel(new FlowLayout());
            
            // add comp card back to top center panel
            computerPanel.add(compPickCard);
@@ -116,8 +153,22 @@ public class PlayScreen extends JFrame
            pCardFront = new JLabel();
            playerPanel.add(pCardFront);
            
-           // add player and comp card panels to center panel
+           // create labels for additional card fronts (will need on war) and add to panels
+           cCardFront2 = new JLabel();
+           compPickCard2 = new JLabel();
+           
+           computerPanel.add(compPickCard2);
+           computerPanel.add(cCardFront2);
+           
+           pCardFront2 = new JLabel();
+           pickCard2 = new JLabel();
+           
+           playerPanel.add(pickCard2);
+           playerPanel.add(pCardFront2);
+           
+           // add player and comp card panels, and middle to center panel
            centerPanel.add(computerPanel);
+           centerPanel.add(midCenterPanel);
            centerPanel.add(playerPanel);
            
            // add center panel to content pane
@@ -172,88 +223,201 @@ public class PlayScreen extends JFrame
        /**
          pickCard button event handler
       */
-      private class nextRound implements ActionListener
+      private class NextRound implements ActionListener
       {
          public void actionPerformed(ActionEvent e)
          {
                  // hide war message and winner message
                   sidePanel1.setVisible(false);
-         //        sidePanel2.setVisible(false);
-                  
-                  // remove card from player's pile
-                  Card playerCard = (Card)playerPile.dequeue();
-                  
-                  // remove card from computer's pile
-                  Card compCard = (Card)compPile.dequeue();
+                          
+              // if preceded by war
+              if (wonCards.size() > 0)
+              {
+           
+                // remove face down cards from queues, add to array
+                 removeCards();
+                 wonCards.add(compCard);
+                 wonCards.add(playerCard);
                  
-                 // get image urls for computer and player cards
-                String pImgURL = "cardpics//" + playerCard.getRank() + (String)(playerCard.getSuit().charAt(0) + ".jpg");
-                String cImgURL = "cardpics//" + compCard.getRank() + (String)(compCard.getSuit().charAt(0) + ".jpg");
- 
-                 // create image icons for computer and player cards
-                 ImageIcon cardFaceImg = new ImageIcon(pImgURL);
-                 ImageIcon compCardFaceImg = new ImageIcon(cImgURL);
+                  // add card back image
+                  compPickCard2.setIcon(smallBack);
+                  pickCard2.setIcon(cardBack);    
+                  
+                // remove face up cards from queues
+                 removeCards();
+                 wonCards.add(compCard);
+                 wonCards.add(playerCard);
+                     
+               // place card front images in next position
+                 cCardFront2.setIcon(smallFront);
+                 pCardFront2.setIcon(cardFaceImg);  
+              }
+              
+               else
+                {
+                  // remove cards from queues
+                    removeCards(); 
                  
-                //make card image smaller for computer
-                Image img = compCardFaceImg.getImage();
-               Image img2 = img.getScaledInstance(125, 160,  java.awt.Image.SCALE_SMOOTH);
-               ImageIcon smallFront = new ImageIcon(img2);
+                  // compare cards
+                    if (playerCard.equals(compCard))
+                    {    
+                        // clear winner message
+                        winnerMsg.setText("");
+                        
+                        // make war message visible
+                        sidePanel1.setVisible(true);
+                        
+                        // set face up images
+                        pCardFront.setIcon(cardFaceImg);
+                        cCardFront.setIcon(smallFront);
+                        
+                        //  add cards to empty array list
+                        wonCards.add(playerCard);
+                        wonCards.add(compCard);
+                        
+                     }
+                     else
+                    {
+                    
+                      // place card images in same position
+                       cCardFront.setIcon(smallFront);
+                       pCardFront.setIcon(cardFaceImg);
+                       
+                       // clear extra card images
+                       cCardFront2.setIcon(null);
+                       pCardFront2.setIcon(null);
+                       compPickCard2.setIcon(null);
+                       pickCard2.setIcon(null);
+                       
+                          // declare string variable for winner text
+                         String winner = "";
+                       
+                       if (playerCard.getRank() > compCard.getRank())
+                       {
+                             // assign winner message to winner String
+                              winner = playerName + " wins round!";
+                              
+                              // add current cards to player's queue
+                              playerPile.enqueue(compCard);
+                              playerPile.enqueue(playerCard);
+                              
+                              // add all (if any) cards in war-generated arraylist to player's queue
+                              for (Card card: wonCards)
+                              {
+                                 System.out.println(card);
+                                 playerPile.enqueue(card);
+                              }
+                              
+                             // update card counts
+                            playNum = playNum + wonCards.size()/2 + 1;
+                            compNum = compNum - wonCards.size()/2 - 1;
+                         }
+                     
+                         else if (playerCard.getRank() < compCard.getRank())
+                        {
+                                 // assign winner message to winner string
+                                 winner = "Computer wins round!";
+                                 
+                                 // add current card's to computer's queue
+                                 compPile.enqueue(compCard);
+                                 compPile.enqueue(playerCard);
+                                 
+                                 // add all (if any) cards in war-generated arraylist to player's queue
+                                 for (Card card: wonCards)
+                                 {
+                                    System.out.println(card);
+                                    compPile.enqueue(card);
+                                 }
+                                 
+                                   // update card counts
+                                     playNum = playNum - wonCards.size()/2 - 1;
+                                    compNum = compNum + wonCards.size()/2 + 1;
+                  
+                                 // if either card count dips below zero, reassign to zero
+                        /*         if (compNum < 0)
+                                    compNum = 0;
+                                 if (playNum < 0)
+                                    playNum = 0;   */
+                           }
                
-                 cCardFront.setIcon(smallFront);
-                 pCardFront.setIcon(cardFaceImg);
-                 
-          //       centerPanel.add(computerPanel);
-          //       centerPanel.add(playerPanel);
-                 
-                 // add center panel to center of window
-          //       add(centerPanel, BorderLayout.CENTER);   
+
+                         // set winner message
+                         winnerMsg.setText(winner);
+                         
+                          // empty arraylist of wonCards
+                          wonCards = new ArrayList<>();   
+                 }
+            }
                  
                  setVisible(true);
-                 
-                 // compare cards
-                 if (playerCard.equals(compCard))
-                 {    
-                     // make war message visible
-                     sidePanel1.setVisible(true);
-                     
-                     // add card back image and button to comp and player panels, respectively
-                     computerPanel.add(compPickCard);
-                     playerPanel.add(pickCard);
-                     
-                     centerPanel.add(computerPanel);
-                     centerPanel.add(playerPanel);
-                     
-                     add(centerPanel, BorderLayout.CENTER);
-                     
-                 }
-                 
-               else if (playerCard.getRank() > compCard.getRank())
-                 {
-                  String winner = playerName + " wins round!";
-                  winnerMsg.setText(winner);
-                  playerPile.enqueue(compCard);
-                  playerPile.enqueue(playerCard);
-                  playNum++;
-                  compNum--;
-                 }
-                 
-               else if (playerCard.getRank() < compCard.getRank())
-               {
-                  String winner = "Computer wins round!";
-                  winnerMsg.setText(winner);
-                  compPile.enqueue(compCard);
-                  playerPile.enqueue(playerCard);
-                  compNum++;
-                  playNum--;
-               }
-               
-                 // add(sidePanel2, BorderLayout.EAST);
-               //   sidePanel2.setVisible(true);
-               
-               // reset remaining cards counts
-               compStatsTxt.setText("Computer's Remaining Cards: " + compNum);
-               playerStatsTxt .setText(playerName + "'s Remaining Cards: " + playNum);             
+                        
+           
+            // reset remaining cards counts
+          compStatsTxt.setText("Computer's Remaining Cards: " + compNum);
+          playerStatsTxt .setText(playerName + "'s Remaining Cards: " + playNum);    
          }
+         
+       }
+         
+         private void removeCards()
+       {
+          // remove card from player's pile
+          playerCard = (Card)playerPile.dequeue();
+    //      System.out.println(playerCard + " " + playerCard.getRank());
+                 
+         // remove card from computer's pile
+          compCard = (Card)compPile.dequeue();
+   //        System.out.println(compCard + " " + compCard.getRank());
+           
+          // get image urls for computer and player cards
+         String pImgURL = "cardpics//" + playerCard.getRank() + (String)(playerCard.getSuit().charAt(0) + ".jpg");
+         String cImgURL = "cardpics//" + compCard.getRank() + (String)(compCard.getSuit().charAt(0) + ".jpg");
+ 
+          // create image icons for computer and player cards
+           cardFaceImg = new ImageIcon(pImgURL);
+           ImageIcon compCardFaceImg = new ImageIcon(cImgURL);
+                 
+           //make card image smaller for computer
+           Image img = compCardFaceImg.getImage();
+           Image img2 = img.getScaledInstance(125, 160,  java.awt.Image.SCALE_SMOOTH);
+           smallFront = new ImageIcon(img2);
+           
+           // if either pile is empty, end game
+            if (compPile.isEmpty() || playerPile.isEmpty())
+               {
+                  pickCard.setEnabled(false);
+                  pickCard.setIcon(null);
+                  compPickCard.setIcon(null);
+                  
+                  if (compNum == 0)
+                      winnerMsg.setText(playerName + " loses the game!");
+                 if (playNum == 0)
+                     winnerMsg.setText(playerName + "wins the game!");
+         }
+
      }
-   
+      
+     /**
+         new game button event handler
+      */
+      private class CreateGame implements ActionListener
+      {
+         public void actionPerformed(ActionEvent e)
+         {
+            new CreatePlayer();
+            setVisible(false);
+         }
+      }
+      
+      /**
+         quit button event handler
+      */
+      private class QuitGame implements ActionListener
+      {
+         public void actionPerformed(ActionEvent e)
+         {
+            System.exit(0);
+         }
+      }
+
 }

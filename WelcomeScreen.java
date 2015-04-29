@@ -35,7 +35,7 @@ public class WelcomeScreen extends  JFrame
          setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          
          // Create a BorderLayout manager
-         setLayout(new GridLayout(1,1));
+         setLayout(new GridLayout(3,1));
          
          // set welcome message
          welcomeMessage = new JLabel("Welcome to War!");

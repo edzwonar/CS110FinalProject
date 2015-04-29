@@ -35,15 +35,13 @@ public class Deck
       deck = new ArrayList<Card>();
       // System.out.println(deck.size());
 
-      for (int r = Card.ACE; r<=Card.KING;r++)
+      for (int r = 2; r<=Card.ACE;r++)
       {
          for (int s=Card.SPADES;s<=Card.DIAMONDS;s++)
          {
            deck.add(new Card(r,s));
          }
-      }
-    //  System.out.println(deck.get(1));
-     
+      }   
    
    }
    /** 

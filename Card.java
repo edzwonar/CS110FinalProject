@@ -12,7 +12,7 @@
 public class Card
 {
    // declare variables
-   public static final int SPADES = 1, CLUBS = 2, HEARTS = 3, DIAMONDS = 4, ACE = 1, JACK = 11, QUEEN = 12, KING = 13;
+   public static final int SPADES = 1, CLUBS = 2, HEARTS = 3, DIAMONDS = 4, JACK = 11, QUEEN = 12, KING = 13, ACE = 14;
    private int rank, suit;
    private String suitName;
    
