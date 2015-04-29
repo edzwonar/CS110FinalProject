@@ -13,11 +13,12 @@ public class WelcomeScreen extends  JFrame
       private JPanel imgPanel;
       private JPanel playPanel;
       private JPanel rulesPanel;
+      private JPanel buttonPanel;
       private JLabel welcomeMessage;
       private JButton play;
       private JButton rules;
       final int WINDOW_WIDTH = 605;
-      final int WINDOW_HEIGHT = 215;
+      final int WINDOW_HEIGHT = 315;
       
       /**
          constructor
@@ -35,50 +36,62 @@ public class WelcomeScreen extends  JFrame
          setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
          
          // Create a BorderLayout manager
-         setLayout(new GridLayout(3,1));
+         setLayout(new GridLayout(2,1));
          
-         // set welcome message
-         welcomeMessage = new JLabel("Welcome to War!");
-         welcomeMessage.setFont(new Font("SansSerif", Font.BOLD, 26));
+         // create button panel
+         buttonPanel = new JPanel(new GridLayout(2,1));
          
-         // create panel for welcome message
-      //   imgPanel = new JPanel();
+         // create welcome image panel
+         imgPanel = new JPanel();
          
-         // add welcome message to imgPanel
-   //      imgPanel.add(welcomeMessage);
+         ImageIcon welcomeImg= new ImageIcon("welcome.jpg");
+         welcomeMessage = new JLabel(welcomeImg);
          
+         imgPanel.add(welcomeMessage);
+          
          // create play button
          play = new JButton("Play Game");
          
-         play.setFont(new Font("SansSerif", Font.BOLD, 30));
+         play.setFont(new Font("SansSerif", Font.BOLD, 20));
          
           // Register event listeners with play button
           play.addActionListener(new PlayButtonListener());
          
          // create panel for play button
-   //      playPanel = new JPanel();
+         playPanel = new JPanel();
+         playPanel.add(play);
+         // set backround to white
+         playPanel.setBackground(Color.WHITE);
          
-         // add play button to playPanel
-   //      playPanel.add(play);
+         // add play button panel to button panel
+         buttonPanel.add(playPanel);
          
          // create rules button
          rules = new JButton("Rules");
-         rules.setFont(new Font("SansSerif", Font.BOLD, 30));
+         rules.setFont(new Font("SansSerif", Font.BOLD, 20));
          
           // Register event listeners with play button
           play.addActionListener(new RulesButtonListener());
          
          // create panel for rules button
-      //   rulesPanel = new JPanel();
+         rulesPanel = new JPanel();
          
          // add rules button to rulesPanel
-   //      playPanel.add(rules);
+         rulesPanel.add(rules);
          
-  //content       // add panels to content pane
-         add(welcomeMessage);
-         add(play);
-         add(rules);
-        // add(rulesPanel, BorderLayout.CENTER);
+          // set backround to white
+         rulesPanel.setBackground(Color.WHITE);
+         
+         // add rules panel to button panel
+         buttonPanel.add(rulesPanel);
+         
+         // make background white
+         imgPanel.setBackground(Color.WHITE);
+         buttonPanel.setBackground(Color.WHITE);
+         
+       // add panels to content pane
+         add(imgPanel);
+         add(buttonPanel);
          
          // Display the window.
          setVisible(true);

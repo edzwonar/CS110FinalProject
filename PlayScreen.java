@@ -17,19 +17,19 @@ import java.awt.event.*;
 public class PlayScreen extends JFrame
 {
       private String playerName;
-      private JPanel compStatsPanel, centerPanel, midCenterPanel, playerPanel;
+      private JPanel compStatsPanel, centerPanel, bottomCenterPanel, playerPanel;
       private JPanel computerPanel, quitPanel, newGamePanel, playerStatsPanel, sidePanel1, sidePanel2;
       private JLabel compStatsTxt, playerStatsTxt, cCardFront, cCardFront2, pCardFront;
-      private JLabel pCardFront2, compPickCard, compPickCard2, pickCard2, winnerMsg;
-      private ImageIcon smallBack, cardBack, smallFront, cardFaceImg;
+      private JLabel pCardFront2, compPickCard, compPickCard2, pickCard2, winnerMsg, warMsg;
+      private ImageIcon smallBack, cardBack, smallFront, cardFaceImg, warIcon;
       private JButton pickCard, quit, newGame;
-      final int WINDOW_WIDTH = 800;
-      final int WINDOW_HEIGHT = 615;
+      final int WINDOW_WIDTH = 850, WINDOW_HEIGHT = 615;
       private int compNum = 26;
       private int playNum = 26;
       private QueueReferenceBased compPile, playerPile;
       private ArrayList<Card> wonCards = new ArrayList<>();
       private Card playerCard = new Card(0,0), compCard = new Card(0,0);
+      boolean war = false;
 
    /**
       constructor accepts player's name, sets
@@ -57,6 +57,8 @@ public class PlayScreen extends JFrame
          
          // create panel for computer stats
          compStatsPanel = new JPanel();
+         // set background
+         compStatsPanel.setBackground(Color.WHITE);
          
          // create side panels
           sidePanel1 = new JPanel();
@@ -64,14 +66,18 @@ public class PlayScreen extends JFrame
                   
          // create label for computer
          compStatsTxt = new JLabel("Computer's Remaining Cards: " + compNum);
+         compStatsTxt.setFont(new Font("SansSerif", Font.BOLD, 20));
          compStatsPanel.add(compStatsTxt);
          
          // create panel for player stats
          playerStatsPanel = new JPanel();
+         // set background
+         playerStatsPanel.setBackground(Color.WHITE);
          
          // create label for player
          playerStatsTxt = new JLabel(playerName + "'s Remaining Cards: " + playNum);
-        playerStatsPanel.add(playerStatsTxt);
+         playerStatsTxt.setFont(new Font("SansSerif", Font.BOLD, 20));
+         playerStatsPanel.add(playerStatsTxt);
         
         // add panels to content pane
         add(compStatsPanel, BorderLayout.NORTH);
@@ -89,24 +95,30 @@ public class PlayScreen extends JFrame
            
            // create quit button
            quit = new JButton("Quit");
-           
+           quit.setFont(new Font("SansSerif", Font.BOLD, 20));
+                
            // register event with quit button
            quit.addActionListener(new QuitGame());
            
            // create panel for quit button
            quitPanel = new JPanel();
+           // set background
+            quitPanel.setBackground(Color.WHITE);
            
            // add quit button to panel
            quitPanel.add(quit);
            
            // create new game button
            newGame = new JButton("New Game");
+           newGame.setFont(new Font("SansSerif", Font.BOLD, 20));
            
            // register event with new game button
            newGame.addActionListener(new CreateGame());
            
            // create panel for new game button
            newGamePanel = new JPanel();
+           // set background
+           newGamePanel.setBackground(Color.WHITE);
            
            // add new game button to panel
            newGamePanel.add(newGame);
@@ -130,16 +142,24 @@ public class PlayScreen extends JFrame
            
            // create top center panel for comp cards
            computerPanel = new JPanel(new FlowLayout());
-           
-           // create middle center panel for text
-           midCenterPanel = new JPanel(new FlowLayout());
-           
+           // set background
+           computerPanel.setBackground(Color.WHITE);
+         
+           // create bottom center panel for text
+           bottomCenterPanel = new JPanel(new FlowLayout());
+           // set background
+           bottomCenterPanel.setBackground(Color.WHITE);
+         
            // add blank winner message to midCenter panel
           winnerMsg = new JLabel("");
-          midCenterPanel.add(winnerMsg);
+          winnerMsg.setFont(new Font("SansSerif", Font.BOLD, 20));
+          
+          bottomCenterPanel.add(winnerMsg);
            
            // create bottom center panel for player cards
            playerPanel = new JPanel(new FlowLayout());
+           // set background
+           playerPanel.setBackground(Color.WHITE);
            
            // add comp card back to top center panel
            computerPanel.add(compPickCard);
@@ -168,8 +188,8 @@ public class PlayScreen extends JFrame
            
            // add player and comp card panels, and middle to center panel
            centerPanel.add(computerPanel);
-           centerPanel.add(midCenterPanel);
            centerPanel.add(playerPanel);
+           centerPanel.add(bottomCenterPanel);
            
            // add center panel to content pane
            add(centerPanel, BorderLayout.CENTER);
@@ -178,14 +198,12 @@ public class PlayScreen extends JFrame
            sidePanel1.setVisible(false);
                   
            // add war message but keep hidden
-          JLabel warMessage = new JLabel("War!");
-           warMessage.setFont(new Font("SansSerif", Font.BOLD, 30));
-                     
-          // add label to side panel
-          sidePanel1.add(warMessage);
+           ImageIcon warIcon = new ImageIcon("war.png");
+           warMsg = new JLabel();
+                   
                      
            // add sidePanel to content pane
-           add(sidePanel1, BorderLayout.WEST);
+    //       add(sidePanel1, BorderLayout.WEST);
            add(sidePanel2, BorderLayout.EAST);
 
            
@@ -229,13 +247,15 @@ public class PlayScreen extends JFrame
          {
                  // hide war message and winner message
                   sidePanel1.setVisible(false);
+                  
+                  // remove next card from both piles
+                  removeCards();
                           
               // if preceded by war
               if (wonCards.size() > 0)
               {
-           
-                // remove face down cards from queues, add to array
-                 removeCards();
+                           
+                // add face down cards to array (will have been next removed cards above)
                  wonCards.add(compCard);
                  wonCards.add(playerCard);
                  
@@ -245,6 +265,8 @@ public class PlayScreen extends JFrame
                   
                 // remove face up cards from queues
                  removeCards();
+                 getImages();
+                 
                  wonCards.add(compCard);
                  wonCards.add(playerCard);
                      
@@ -252,20 +274,29 @@ public class PlayScreen extends JFrame
                  cCardFront2.setIcon(smallFront);
                  pCardFront2.setIcon(cardFaceImg);  
               }
+              // if nothing in array, then clear extra panels
+              else
+              {
+                         // clear extra panels
+                       clearPanels();
+              }
               
-               else
-                {
-                  // remove cards from queues
-                    removeCards(); 
-                 
+            //       else
+             //      {
                   // compare cards
                     if (playerCard.equals(compCard))
-                    {    
+                    {  
+                        // set war boolean to true
+                        war = true; 
+                          
                         // clear winner message
-                        winnerMsg.setText("");
+                        winnerMsg.setIcon(warIcon);
                         
                         // make war message visible
                         sidePanel1.setVisible(true);
+                        
+                        // get face up  images
+                        getImages();
                         
                         // set face up images
                         pCardFront.setIcon(cardFaceImg);
@@ -274,26 +305,31 @@ public class PlayScreen extends JFrame
                         //  add cards to empty array list
                         wonCards.add(playerCard);
                         wonCards.add(compCard);
-                        
-                     }
-                     else
+                  }      
+                     
+                     if (!playerCard.equals(compCard))
                     {
                     
-                      // place card images in same position
-                       cCardFront.setIcon(smallFront);
-                       pCardFront.setIcon(cardFaceImg);
-                       
-                       // clear extra card images
-                       cCardFront2.setIcon(null);
-                       pCardFront2.setIcon(null);
-                       compPickCard2.setIcon(null);
-                       pickCard2.setIcon(null);
+                       // get card images
+                       getImages();
                        
                           // declare string variable for winner text
                          String winner = "";
-                       
-                       if (playerCard.getRank() > compCard.getRank())
-                       {
+                         
+                         // clear extra card images
+                                if (!war)
+                               {
+                                  // place card images in same position
+                                 cCardFront.setIcon(smallFront);
+                                 pCardFront.setIcon(cardFaceImg);
+                                }
+                                
+                                // set war boolean to false
+                                war = false; 
+                      
+                     if (playerCard.getRank() > compCard.getRank())
+                       {   
+                           
                              // assign winner message to winner String
                               winner = playerName + " wins round!";
                               
@@ -304,13 +340,17 @@ public class PlayScreen extends JFrame
                               // add all (if any) cards in war-generated arraylist to player's queue
                               for (Card card: wonCards)
                               {
-                                 System.out.println(card);
+                                 System.out.println(card + "" + card.getRank());
                                  playerPile.enqueue(card);
                               }
                               
-                             // update card counts
-                            playNum = playNum + wonCards.size()/2 + 1;
-                            compNum = compNum - wonCards.size()/2 - 1;
+                              // update card counts
+                              playNum = playNum + wonCards.size()/2 + 1;
+                              compNum = compNum - wonCards.size()/2 - 1;
+                            
+                              // empty arraylist of wonCards
+                              wonCards = new ArrayList<>();  
+                          
                          }
                      
                          else if (playerCard.getRank() < compCard.getRank())
@@ -325,50 +365,76 @@ public class PlayScreen extends JFrame
                                  // add all (if any) cards in war-generated arraylist to player's queue
                                  for (Card card: wonCards)
                                  {
-                                    System.out.println(card);
+                                    System.out.println(card + "" + card.getRank());
                                     compPile.enqueue(card);
                                  }
                                  
-                                   // update card counts
-                                     playNum = playNum - wonCards.size()/2 - 1;
-                                    compNum = compNum + wonCards.size()/2 + 1;
+                                 // update card counts
+                                 playNum = playNum - wonCards.size()/2 - 1;
+                                 compNum = compNum + wonCards.size()/2 + 1;
+                                    
+                                 // empty arraylist of wonCards
+                                wonCards = new ArrayList<>();  
                   
-                                 // if either card count dips below zero, reassign to zero
-                        /*         if (compNum < 0)
+                                // if either card count dips below zero, reassign to zero
+                                if (compNum < 0)
                                     compNum = 0;
                                  if (playNum < 0)
-                                    playNum = 0;   */
+                                    playNum = 0;   
                            }
                
 
                          // set winner message
                          winnerMsg.setText(winner);
-                         
-                          // empty arraylist of wonCards
-                          wonCards = new ArrayList<>();   
+                          
                  }
-            }
-                 
-                 setVisible(true);
-                        
-           
+       //     }
+                                 
             // reset remaining cards counts
           compStatsTxt.setText("Computer's Remaining Cards: " + compNum);
-          playerStatsTxt .setText(playerName + "'s Remaining Cards: " + playNum);    
+          playerStatsTxt .setText(playerName + "'s Remaining Cards: " + playNum);
+            
+            setVisible(true);
          }
-         
+        
        }
          
+         /**
+            This method removes the next card from the top
+            of both the computer's and player's piles
+         */
          private void removeCards()
        {
           // remove card from player's pile
           playerCard = (Card)playerPile.dequeue();
-    //      System.out.println(playerCard + " " + playerCard.getRank());
-                 
+          
          // remove card from computer's pile
           compCard = (Card)compPile.dequeue();
-   //        System.out.println(compCard + " " + compCard.getRank());
-           
+         
+                    
+           // if either pile is empty, end game
+        //    if (compPile.isEmpty() || playerPile.isEmpty())
+               if (compNum == 0 || playNum == 0)
+               {
+                  pickCard.setEnabled(false);
+                  pickCard.setIcon(null);
+                  compPickCard.setIcon(null);
+                  
+                  if (compNum == 0)
+                      winnerMsg.setText(playerName + " loses the game!");
+                 if (playNum == 0)
+                     winnerMsg.setText(playerName + "wins the game!");
+             }
+
+     }
+      
+      /**
+         This method gets the images for the cards 
+         from the computer's and player's piles and
+         assigns them to the image icon variables
+      */
+      private void getImages()
+      {
           // get image urls for computer and player cards
          String pImgURL = "cardpics//" + playerCard.getRank() + (String)(playerCard.getSuit().charAt(0) + ".jpg");
          String cImgURL = "cardpics//" + compCard.getRank() + (String)(compCard.getSuit().charAt(0) + ".jpg");
@@ -381,32 +447,33 @@ public class PlayScreen extends JFrame
            Image img = compCardFaceImg.getImage();
            Image img2 = img.getScaledInstance(125, 160,  java.awt.Image.SCALE_SMOOTH);
            smallFront = new ImageIcon(img2);
-           
-           // if either pile is empty, end game
-            if (compPile.isEmpty() || playerPile.isEmpty())
-               {
-                  pickCard.setEnabled(false);
-                  pickCard.setIcon(null);
-                  compPickCard.setIcon(null);
-                  
-                  if (compNum == 0)
-                      winnerMsg.setText(playerName + " loses the game!");
-                 if (playNum == 0)
-                     winnerMsg.setText(playerName + "wins the game!");
-         }
 
-     }
+      }
+      
+      /**
+         This method is used to clear extra panels
+         (previously holding card images) 
+         when they are not needed
+      */
+      private void clearPanels()
+      {
+             cCardFront2.setIcon(null);
+             pCardFront2.setIcon(null);
+             compPickCard2.setIcon(null);
+             pickCard2.setIcon(null);    
+         
+      }
       
      /**
          new game button event handler
       */
       private class CreateGame implements ActionListener
       {
-         public void actionPerformed(ActionEvent e)
-         {
-            new CreatePlayer();
-            setVisible(false);
-         }
+            public void actionPerformed(ActionEvent e)
+            {
+               new CreatePlayer();
+               setVisible(false);
+            }
       }
       
       /**
@@ -414,10 +481,10 @@ public class PlayScreen extends JFrame
       */
       private class QuitGame implements ActionListener
       {
-         public void actionPerformed(ActionEvent e)
-         {
-            System.exit(0);
-         }
+            public void actionPerformed(ActionEvent e)
+            {
+               System.exit(0);
+            }
       }
-
-}
+ }
+ 
