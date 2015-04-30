@@ -1,22 +1,24 @@
-/*
-   Emilie Dzwonar
-   CS 110 Final Project
-   War Game Welcome Screen
+/**
+  *CS 110 Final Project
+  *War Game Welcome Screen
+  *
+  * This class supplies a welcome screen
+  * for the card game War
+  *@author Emilie Dzwonar
 */
 
 import javax.swing.*;
 import java.awt.*; 
 import java.awt.event.*;
 
-public class WelcomeScreen extends  JFrame
+public class WelcomeScreen extends  GameWindow
 {
       private JPanel imgPanel;
       private JPanel playPanel;
       private JPanel rulesPanel;
       private JPanel buttonPanel;
       private JLabel welcomeMessage;
-      private JButton play;
-      private JButton rules;
+      private JButton playButton, rules;
       final int WINDOW_WIDTH = 605;
       final int WINDOW_HEIGHT = 315;
       
@@ -44,34 +46,29 @@ public class WelcomeScreen extends  JFrame
          // create welcome image panel
          imgPanel = new JPanel();
          
-         ImageIcon welcomeImg= new ImageIcon("welcome.jpg");
+         ImageIcon welcomeImg= new ImageIcon("cardpics//welcome.jpg");
          welcomeMessage = new JLabel(welcomeImg);
          
          imgPanel.add(welcomeMessage);
           
          // create play button
-         play = new JButton("Play Game");
-         
-         play.setFont(new Font("SansSerif", Font.BOLD, 20));
-         
-          // Register event listeners with play button
-          play.addActionListener(new PlayButtonListener());
+         playButton = getPlayButton();
          
          // create panel for play button
          playPanel = new JPanel();
-         playPanel.add(play);
+         playPanel.add(playButton);
          // set backround to white
          playPanel.setBackground(Color.WHITE);
          
          // add play button panel to button panel
          buttonPanel.add(playPanel);
          
-         // create rules button
+          // create rules button
          rules = new JButton("Rules");
          rules.setFont(new Font("SansSerif", Font.BOLD, 20));
          
-          // Register event listeners with play button
-          play.addActionListener(new RulesButtonListener());
+          // Register event listeners with rules button
+          rules.addActionListener(new RulesButtonListener());
          
          // create panel for rules button
          rulesPanel = new JPanel();
@@ -96,19 +93,7 @@ public class WelcomeScreen extends  JFrame
          // Display the window.
          setVisible(true);
       }
-      
-      /**
-         play button event handler
-      */
-      private class PlayButtonListener implements ActionListener
-      {
-         public void actionPerformed(ActionEvent e)
-         {
-            new CreatePlayer();
-            setVisible(false);
-          }
-      }
-      
+            
        /**
          rules button event handler
       */

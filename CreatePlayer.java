@@ -1,18 +1,18 @@
-/*
-   Emilie Dzwonar
-   CS 110 Final Project
-   Create Player Screen
+/** 
+  *CS 110 Final Project
+   *Create Player Screen
+   *
+   * This class displays a window that prompts
+   *the player for his/her name and then provides
+   *a button to begin
+  * @author Emilie Dzwonar
 */
 import javax.swing.*;
 import java.awt.*; 
 import java.awt.event.*;
 
-/**
-   This class displays a window that prompts
-   the player for his/her name and then provides
-   a button to begin
-*/
-public class CreatePlayer extends JFrame
+
+public class CreatePlayer extends GameWindow
 {
       private JLabel enterPlayer;
       private JTextField nameField;
@@ -77,16 +77,12 @@ public class CreatePlayer extends JFrame
        
        // create panel for quit button
         quitPanel = new JPanel();
+        
         // make background white
         quitPanel.setBackground(Color.WHITE);
         
         // create quit button
-        quitButton = new JButton("Quit");
-        quitButton.setFont(new Font("SansSerif", Font.BOLD, 20));
-        
-        // register event with quitButton
-        quitButton.addActionListener(new QuitGame());
-        
+        quitButton = getQuitButton();
         quitPanel.add(quitButton);
         
          // add panels to content pane
@@ -108,17 +104,6 @@ public class CreatePlayer extends JFrame
          {
             new PlayScreen(nameField.getText());
             setVisible(false);
-         }
-      }
-      
-      /**
-         quit button event handler
-      */
-      private class QuitGame implements ActionListener
-      {
-         public void actionPerformed(ActionEvent e)
-         {
-            System.exit(0);
          }
       }
 
